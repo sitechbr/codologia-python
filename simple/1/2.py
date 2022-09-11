@@ -1,0 +1,6 @@
+print("Result summ 2+2=", 2+2)
+print("Result umn 2*2=", 2*2)
+print("Result del 17/2=", 17.0/2)
+print("Result del 17//2=", 17//2)
+print("Result del 17%2=", 17%2)
+print("Result minus 2-16=", 2-16)
