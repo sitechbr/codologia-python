@@ -3,6 +3,23 @@
 import pygame
 import random
 
+RELOAD_SPEED = 450
+SPEED_PLAYER = 400
+MOVE_DOWN = 3500
+WIDTH = 640
+HEIGHT = 480
+FPS = 30
+# Задаем цвета
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+reloaded= True
+score = 0
+font_name = pygame.font.match_font('arial')
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self,x,y):        
         pygame.sprite.Sprite.__init__(self)
@@ -11,7 +28,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.x, self.y = self.rect.center
         self.rect.center = (x,y)
-        self.speed = 10
+        self.speed = SPEED_PLAYER
     def move_left(self):
         self.rect.move_ip(-self.speed,0)
     def move_right(self):
@@ -53,20 +70,7 @@ def show_score():
     text_surface = font.render(str(score), True, WHITE)
     screen.blit(text_surface, (WIDTH // 2, 10))
 
-RELOAD_SPEED = 450
-MOVE_DOWN = 3500
-WIDTH = 640
-HEIGHT = 480
-FPS = 30
-# Задаем цвета
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-reloaded, running = True, True
-score = 0
-font_name = pygame.font.match_font('arial')
+
 
 # Создаем игру и окно
 pygame.init()  # это команда, которая запускает pygame
@@ -129,7 +133,6 @@ while running:
     all_sprites.draw(screen)
     shots.draw(screen)
     # после отрисовки всего, переворачиваем экран
-    
     pygame.display.flip()
 
 pygame.quit()
