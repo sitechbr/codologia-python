@@ -3,9 +3,9 @@
 import pygame
 import random
 
-RELOAD_SPEED = 450
+RELOAD_SPEED = 150
 SPEED_PLAYER = 10
-MOVE_DOWN = 3500
+MOVE_DOWN = 2500
 WIDTH = 640
 HEIGHT = 480
 FPS = 30
@@ -66,9 +66,14 @@ class Enemy(pygame.sprite.Sprite):
 
         
 def show_score():
-    font = pygame.font.Font(font_name, 18)
+    font = pygame.font.Font(font_name, 20)
     text_surface = font.render(str(score), True, WHITE)
     screen.blit(text_surface, (WIDTH // 2, 10))
+
+def show_text(my_string):
+    font = pygame.font.Font(font_name, 50)
+    text_surface = font.render(str(my_string), True, WHITE)
+    screen.blit(text_surface, (WIDTH // 2-110, HEIGHT//2-100))
 
 
 
@@ -128,7 +133,15 @@ while running:
         score+=1
     hits = pygame.sprite.spritecollide(player, enemies, False)
     if hits:
-        running = False 
+        show_text("Game over")
+        pygame.display.update()
+        pygame.time.delay(5000)
+        running = False
+    if score > 50:
+        show_text("You Win")
+        pygame.display.update()
+        pygame.time.delay(5000)
+        running = False
     player.rect.clamp_ip(screen.get_rect())
     all_sprites.draw(screen)
     shots.draw(screen)
