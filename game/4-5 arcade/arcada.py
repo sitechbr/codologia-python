@@ -5,7 +5,7 @@ import random
 
 RELOAD_SPEED = 450
 SPEED_PLAYER = 10
-MOVE_DOWN = 3500
+MOVE_DOWN = 500
 WIDTH = 640
 HEIGHT = 480
 FPS = 30
@@ -18,7 +18,7 @@ BLUE = (0, 0, 255)
 reloaded= True
 score = 0
 font_name = pygame.font.match_font('arial')
-
+state = "stop"
 
 class Player(pygame.sprite.Sprite):
     def __init__(self,x,y):        
@@ -30,9 +30,11 @@ class Player(pygame.sprite.Sprite):
         self.rect.center = (x,y)
         self.speed = SPEED_PLAYER
     def move_left(self):
-        self.rect.move_ip(-self.speed,0)
+        if self.rect.left >5:
+            self.rect.move_ip(-self.speed,0)
     def move_right(self):
-        self.rect.move_ip(self.speed,0)
+        if self.rect.right < WIDTH:
+            self.rect.move_ip(self.speed,0)
     def shoot(self):
         shot = Shots(self.rect.centerx, self.rect.top)
         all_sprites.add(shot)
@@ -65,13 +67,15 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.y += 10     
 
         
-def show_score():
-    font = pygame.font.Font(font_name, 18)
-    text_surface = font.render(str(score), True, WHITE)
-    screen.blit(text_surface, (WIDTH // 2, 10))
+def show_score(score):
+    font = pygame.font.Font(font_name,20)
+    text_surface = font.render(str(score), True,WHITE)
+    screen.blit(text_surface,(WIDTH/2,10))
 
-
-
+def show_text(my_text):
+    font = pygame.font.Font(font_name,40)
+    text_surface = font.render(str(my_text), True,WHITE)
+    screen.blit(text_surface,(WIDTH/2-text_surface.get_width()/2,HEIGHT/2-40))
 # Создаем игру и окно
 pygame.init()  # это команда, которая запускает pygame
 move_down_event = pygame.USEREVENT + 1
@@ -98,7 +102,7 @@ while running:
     # Держим цикл на правильной скорости
     clock.tick(FPS)
     screen.fill(BLACK)
-    show_score()
+
     # Ввод процесса (события)
     for event in pygame.event.get():
         # check for closing window
@@ -110,28 +114,48 @@ while running:
             # when the reload timer runs out, reset it
             reloaded = True
             pygame.time.set_timer(reloaded_event, 0)
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                state = "stop"
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                player.move_left()
+                state = "left"
             if event.key == pygame.K_RIGHT:
-                player.move_right() 
+                state = "right"
             if event.key == pygame.K_SPACE:
                 if reloaded:
                     player.shoot()
                     reloaded = False
                     # when shooting, create a timeout of RELOAD_SPEED
-                    pygame.time.set_timer(reloaded_event, RELOAD_SPEED)                             
+                    pygame.time.set_timer(reloaded_event, RELOAD_SPEED)
+    if state == "left":
+        player.move_left()
+    elif state == "right":
+        player.move_right()
+    else:
+        pass
     shots.update()             
     hits = pygame.sprite.groupcollide(enemies, shots, True, True)
     for hit in hits:
         hit.kill()
         score+=1
-    hits = pygame.sprite.spritecollide(player, enemies, False)
+
+    hits = pygame.sprite.spritecollide(player,enemies,False)
     if hits:
-        running = False 
+        show_text("Game Over")
+        pygame.display.update()
+        pygame.time.delay(5000)
+        running = False
+    if score > 20:
+        show_text("YOU WIN")
+        pygame.display.update()
+        pygame.time.delay(5000)
+        running = False
+
     player.rect.clamp_ip(screen.get_rect())
     all_sprites.draw(screen)
     shots.draw(screen)
+    show_score(score)
     # после отрисовки всего, переворачиваем экран
     pygame.display.update()
 
